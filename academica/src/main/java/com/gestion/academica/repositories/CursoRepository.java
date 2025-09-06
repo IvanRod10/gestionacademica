@@ -3,6 +3,8 @@ package com.gestion.academica.repositories;
 import com.gestion.academica.entities.Curso;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import com.gestion.academica.dto.ProfesorCursosDTO;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -20,4 +22,15 @@ public interface CursoRepository extends JpaRepository<Curso, Long> {
 
     // Por relación
     List<Curso> findByProfesor_Id(Long profesorId);
+    @Query("""
+    SELECT new com.gestion.academica.dto.ProfesorCursosDTO(
+        p.nombreCompleto,
+        COUNT(c)
+    )
+    FROM Curso c
+    JOIN c.profesor p
+    GROUP BY p.id, p.nombreCompleto
+    ORDER BY p.nombreCompleto
+""")
+    List<ProfesorCursosDTO> cantidadCursosPorProfesor();
 }
